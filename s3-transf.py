@@ -47,13 +47,9 @@ def uploads3(file_name, bucket, object_name=None):
         return False
     return True
 
-<<<<<<< HEAD
-    s3.upload_file('ultimo_teste.dd', 'bucket', 'ultimo_teste.dd', Callback=ProgressPercentage('ultimo_teste.dd'), Config=config)
-=======
 def get_args():
     parser = argparse.ArgumentParser(
         description='Argumentos para backup S3')
->>>>>>> 46e193feb84d5ec3065ef7e1ab449be2bb068fb1
 
 
     parser.add_argument('--path','-p',
