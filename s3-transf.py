@@ -29,7 +29,7 @@ def main():
     s3 = boto3.client('s3')
     config = TransferConfig(multipart_threshold=1024*25, multipart_chunksize=1024*25, use_threads=True, max_concurrency=10)
 
-    s3.upload_file('teste5.dd', 'bucket', 'teste5.dd', Callback=ProgressPercentage('teste5.dd'), Config=config)
+    s3.upload_file('ultimo_teste.dd', 'bucket', 'ultimo_teste.dd', Callback=ProgressPercentage('ultimo_teste.dd'), Config=config)
 
 if __name__ == "__main__":
     main()
