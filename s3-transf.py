@@ -5,12 +5,11 @@ import sys
 import argparse
 import time
 import logging
-from fnmatch import fnmatch
 import threading
 import boto3
 from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import ClientError
-
+from fnmatch import fnmatch
 
 
 class ProgressPercentage(object):
@@ -32,20 +31,23 @@ class ProgressPercentage(object):
                     percentage))
             sys.stdout.flush()
 
-def uploads3(file_name, bucket, object_name=None):
-    s3 = boto3.client('s3')
+
+def uploads3(file_name, path, object_name=None):
+    s3 = boto3.resource('s3')
+    bucket= s3.Bucket('s3doleandro')
     config = TransferConfig(multipart_threshold=1024*25, 
                             multipart_chunksize=1024*25, 
                             use_threads=True, max_concurrency=10)
     try:
-        responde = s3.upload_file(file_name, bucket, object_name, 
-                                  Callback=ProgressPercentage(file_name), 
-                                  Config=config)
+        bucket.upload_file(file_name, path, object_name,
+                        Callback=ProgressPercentage(file_name), 
+                        Config=config)
                                 
     except ClientError as e:
         logging.error(e)
         return False
     return True
+
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -80,6 +82,10 @@ def get_args():
 
 def findfile(path_search, busca, tipo_busca=None, tempo=None):
     now = time.time()
+    my_session = boto3.session.Session()
+    s3 = my_session.resource('s3')
+    bucket = s3.Bucket('xxx')
+
     for relpath, dirs, files in os.walk(path_search):
         for name in files:
             if fnmatch(name, busca): 
@@ -92,8 +98,8 @@ def findfile(path_search, busca, tipo_busca=None, tempo=None):
                     return_time = None
 
                 if return_time is None or return_time > (now - tempo):
-                    print(os.path.normpath(os.path.abspath(full_path)))
-
+                    uploads3(full_path, full_path)
+ 
 
 def main():
     tipo_busca = None
@@ -106,8 +112,8 @@ def main():
         tempo = int(args.modify) * 86400 #segundos por dia
     else:
         tempo = 0
-        
     findfile(args.path, args.search, tipo_busca, tempo )
+
 
 
 # Start program
